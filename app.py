@@ -3,6 +3,8 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import Qt
 from normalization import normalize_audio
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGridLayout, QLabel, QSpacerItem, QSizePolicy
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -18,6 +20,8 @@ class MainWindow(QMainWindow):
         self.top_layout = QHBoxLayout()
         self.main_layout.addLayout(self.top_layout)
 
+        spacer = QSpacerItem(self.width(), 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
         # Create a text field for entering a number
         self.normalization_field = QLineEdit(self)
         self.normalization_field.setPlaceholderText("Normalization gain")
@@ -27,14 +31,22 @@ class MainWindow(QMainWindow):
         self.normalization_checkbox = QCheckBox("Enable Normalization", self)
         self.top_layout.addWidget(self.normalization_checkbox)
 
+        self.top_layout.addSpacerItem(spacer)
+
         # Create a layout for the bottom row
-        self.bottom_layout = QHBoxLayout()
+        self.bottom_layout = QGridLayout()
         self.main_layout.addLayout(self.bottom_layout)
 
         # Create a button to select the directory
         self.select_button = QPushButton("Select Directory", self)
         self.select_button.clicked.connect(self.select_directory)
-        self.bottom_layout.addWidget(self.select_button)
+
+        # Set the size policy of the button to expand vertically
+        self.select_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Add the button to the bottom layout
+        self.bottom_layout.addWidget(self.select_button, 0, 0, 1, 2)
+
 
     def select_directory(self):
         options = QFileDialog.Options()
@@ -61,7 +73,7 @@ app = QApplication(sys.argv)
 
 # Create the main window
 window = MainWindow()
-window.showMaximized()  # Maximize the window to full screen
+window.show()  # Maximize the window to full screen
 
 # Start the event loop
 sys.exit(app.exec_())
