@@ -2,6 +2,7 @@ import os
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog, QLineEdit, QCheckBox, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from normalization import normalize_audio
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGridLayout, QLabel, QSpacerItem, QSizePolicy
 
@@ -41,12 +42,26 @@ class MainWindow(QMainWindow):
         self.select_button = QPushButton("Select Directory", self)
         self.select_button.clicked.connect(self.select_directory)
 
+        # Enable drag and drop events for the button
+        self.setAcceptDrops(True)
+
         # Set the size policy of the button to expand vertically
         self.select_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # Add the button to the bottom layout
         self.bottom_layout.addWidget(self.select_button, 0, 0, 1, 2)
 
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+
+    def dropEvent(self, event: QDropEvent):
+        if event.mimeData().hasUrls():
+            url = event.mimeData().urls()[0]
+            # Handle the dropped directory here
+            normalization_gain = self.normalization_field.text()
+            enable_normalization = self.normalization_checkbox.isChecked()
+            self.process_wav_files(url.toLocalFile(), normalization_gain, enable_normalization)
 
     def select_directory(self):
         options = QFileDialog.Options()
